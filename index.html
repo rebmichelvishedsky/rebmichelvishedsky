@@ -74,7 +74,8 @@
         <!-- File input visible for uploads -->
         <label class="upload-btn" for="mediaFile">📁 Add Photo / Video / Audio</label>
         <input id="mediaFile" type="file" accept="image/*,video/*,audio/*" />
-
+          <button type="button" class="upload-btn" onclick="openUploadWidget()">Upload Media</button>
+        
         <!-- Admin mode reveal for YouTube / PDF embed fields (optional, client-side) -->
         <div style="margin-top:8px;">
           <span class="small">Admin mode:</span>
@@ -121,6 +122,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript"></script>
 
   <script>
     /*************************************************************************
@@ -367,14 +369,44 @@
       }
     }
 
-    function createMemoryCard(m) {
-      // safe text encoding
-      const safe = (s) => { if (!s) return ''; const d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
-      let date = 'Recent';
-      if (m.timestamp) {
-        try { date = m.timestamp.toDate ? m.timestamp.toDate().toLocaleDateString() : new Date(m.date).toLocaleDateString(); }
-        catch (e) { date = m.date ? new Date(m.date).toLocaleDateString() : 'Recent'; }
-      }
+    function createMemoryCard(memory) {
+    let date = 'Recent';
+    if (memory.timestamp) {
+        try {
+            date = new Date(memory.timestamp.toDate()).toLocaleDateString();
+        } catch (e) {
+            if (memory.date) date = new Date(memory.date).toLocaleDateString();
+        }
+    }
+
+    const escapeHtml = (text) => {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    };
+
+    let mediaHTML = '';
+    if (memory.url) {
+        if (memory.type === 'image') {
+            mediaHTML = `<img src="${memory.url}" class="memory-media">`;
+        } else if (memory.type === 'video') {
+            mediaHTML = `<video src="${memory.url}" class="memory-media" controls></video>`;
+        } else if (memory.type === 'audio') {
+            mediaHTML = `<audio src="${memory.url}" controls style="width:100%; margin-top:10px;"></audio>`;
+        }
+    }
+
+    return `
+        <div class="memory-card">
+            <div class="memory-header">
+                <span class="memory-author">${escapeHtml(memory.author)}</span>
+                <span class="memory-date">${date}</span>
+            </div>
+            <div class="memory-content">${escapeHtml(memory.text || '')}</div>
+            ${mediaHTML}
+        </div>
+    `;
+        }
 
       // Media rendering
       let mediaHtml = '';
@@ -462,5 +494,42 @@
       loadMemories();
     });
   </script>
+  function openUploadWidget() {
+    cloudinary.openUploadWidget(
+        {
+            cloudName: "deiauee2m",           // your Cloudinary cloud name
+            uploadPreset: "rebmichel_unsigned",
+            sources: ["local", "url", "camera"],
+            multiple: true,
+            resourceType: "auto",             // auto detects image/video/audio
+            maxFileSize: 104857600            // 100MB
+        },
+        (error, result) => {
+            if (!error && result && result.event === "success") {
+                console.log("Uploaded:", result.info);
+                // result.info.secure_url → URL of uploaded file
+                addMemory(result.info.secure_url, result.info.resource_type);
+            }
+        }
+    );
+}
+
+// Save uploaded media to Firestore
+async function addMemory(url, type) {
+    try {
+        const now = new Date();
+        const memoryData = {
+            type: type,            // 'image', 'video', 'audio'
+            author: document.getElementById('authorName').value.trim() || 'Anonymous',
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            date: now.toISOString(),
+            url: url
+        };
+        await db.collection('memories').add(memoryData);
+        loadMemories();
+    } catch (err) {
+        console.error("Error saving media:", err);
+    }
+}
 </body>
 </html>
