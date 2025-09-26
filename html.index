@@ -346,7 +346,7 @@
         apiKey: "AIzaSyAB_Blh5iEqmc-NfnnKCUF0ahJE8TBs7Vg",
         authDomain: "rebmichel-11d46.firebaseapp.com",
         projectId: "rebmichel-11d46",
-        storageBucket: "rebmichel-11d46.firebasestorage.app",
+        storageBucket: "rebmichel-11d46.appspot.com",
         messagingSenderId: "244465725723",
         appId: "1:244465725723:web:d5fe068cb9b87e358763be",
         measurementId: "G-WJLYE5G1EX"
