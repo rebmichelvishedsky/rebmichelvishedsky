@@ -82,454 +82,385 @@
           <span class="small" style="margin-left:10px;color:#444">(reveals optional YouTube or PDF fields)</span>
         </div>
 
-        <div id
-        input[type="file"] {
-            display: none;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        textarea.form-input {
-            min-height: 120px;
-            resize: vertical;
-        }
-
-        .memories-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
-        }
-
-        .memory-card {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-
-        .memory-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .memory-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .memory-author {
-            font-weight: bold;
-            color: #333;
-        }
-
-        .memory-date {
-            color: #999;
-            font-size: 0.9em;
-        }
-
-        .memory-content {
-            color: #666;
-            line-height: 1.6;
-            margin-bottom: 15px;
-            white-space: pre-wrap;
-        }
-
-        .memory-media {
-            width: 100%;
-            border-radius: 10px;
-            margin-top: 10px;
-            max-height: 400px;
-            object-fit: cover;
-        }
-
-        .upload-status {
-            display: none;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 20px 0;
-            text-align: center;
-        }
-
-        .upload-status.success {
-            background: #d4edda;
-            color: #155724;
-            display: block;
-        }
-
-        .upload-status.error {
-            background: #f8d7da;
-            color: #721c24;
-            display: block;
-        }
-
-        .upload-status.info {
-            background: #d1ecf1;
-            color: #0c5460;
-            display: block;
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .loading.show {
-            display: block;
-        }
-
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .filter-section {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-        }
-
-        .filter-btn {
-            background: #f0f0f0;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            margin: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .filter-btn:hover, .filter-btn.active {
-            background: #667eea;
-            color: white;
-        }
-
-        .notice {
-            background: #fff3cd;
-            color: #856404;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 1.8em;
-            }
-            
-            .memories-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .upload-btn {
-                width: 100%;
-                margin: 5px 0;
-            }
-        }
-    </style>
-</head>
-<body>
-    <button class="lang-toggle" onclick="toggleLanguage()">עברית</button>
-    
-    <div class="container">
-        <div class="header">
-            <h1 id="mainTitle">In Memory of Reb Michel Vishedsky</h1>
-            <p class="subtitle" id="subtitle">Share your memories and moments</p>
+        <div id="adminFields" style="display:none;margin-top:12px;">
+          <input type="url" id="youtubeUrl" class="form-input" placeholder="YouTube URL (optional, admin)">
+          <input type="url" id="pdfUrl" class="form-input" placeholder="PDF URL (optional, admin)">
+          <div class="small" style="margin-bottom:6px;">If you paste a PDF URL it will be embedded (public PDF). YouTube link should be full URL (https://www.youtube.com/watch?v=...).</div>
         </div>
 
-        <div class="upload-section">
-            <h2 id="shareTitle">Share a Memory</h2>
-            
-            <div class="notice" id="mediaNotice">
-                📷 Photo & video uploads coming soon! For now, please share your written memories below.
-            </div>
-            
-            <form id="memoryForm">
-                <input type="text" class="form-input" id="authorName" placeholder="Your Name" required>
-                <input type="email" class="form-input" id="authorEmail" placeholder="Your Email (optional)">
-                <textarea class="form-input" id="memoryText" placeholder="Share your memory or story..." required></textarea>
-                
-                <!-- File upload temporarily disabled until Storage is available -->
-                <div style="margin: 20px 0; display: none;" id="fileUploadSection">
-                    <label for="photoUpload" class="upload-btn">
-                        📷 <span id="photoLabel">Add Photo</span>
-                    </label>
-                    <input type="file" id="photoUpload" accept="image/*" onchange="handleFileSelect(event, 'photo')">
-                </div>
-                
-                <button type="submit" class="upload-btn" style="width: 100%; background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
-                    <span id="submitBtn">Submit Memory</span>
-                </button>
-            </form>
-            
-            <div id="uploadStatus" class="upload-status"></div>
-            <div id="loading" class="loading">
-                <div class="spinner"></div>
-                <p id="loadingText">Uploading...</p>
-            </div>
-        </div>
+        <button type="submit" class="upload-btn" style="width:100%;background:linear-gradient(135deg,#28a745 0%,#20c997 100%);">
+          <span id="submitBtn">Submit Memory</span>
+        </button>
+      </form>
 
-        <div class="filter-section" style="display: none;" id="filterSection">
-            <h3 id="filterTitle">Filter Memories</h3>
-            <button class="filter-btn active" onclick="filterMemories('all')" id="filterAll">All</button>
-            <button class="filter-btn" onclick="filterMemories('text')" id="filterText">Stories</button>
-        </div>
-
-        <div id="memoriesGrid" class="memories-grid">
-            <div class="loading show">
-                <div class="spinner"></div>
-                <p>Loading memories...</p>
-            </div>
-        </div>
+      <div id="uploadStatus" class="upload-status"></div>
+      <div id="loading" class="loading">
+        <div class="spinner"></div>
+        <p id="loadingText">Uploading...</p>
+      </div>
     </div>
 
-    <!-- Firebase Configuration -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <div class="filter-section" id="filterSection">
+      <h3 id="filterTitle">Filter Memories</h3>
+      <button class="filter-btn active" onclick="filterMemories('all', event)" id="filterAll">All</button>
+      <button class="filter-btn" onclick="filterMemories('text', event)" id="filterText">Stories</button>
+      <button class="filter-btn" onclick="filterMemories('image', event)" id="filterImage">Photos</button>
+      <button class="filter-btn" onclick="filterMemories('video', event)" id="filterVideo">Videos</button>
+      <button class="filter-btn" onclick="filterMemories('audio', event)" id="filterAudio">Audio</button>
+    </div>
 
-    <script>
-        // Your Firebase configuration
-        const firebaseConfig = {
-        apiKey: "AIzaSyAB_Blh5iEqmc-NfnnKCUF0ahJE8TBs7Vg",
-        authDomain: "rebmichel-11d46.firebaseapp.com",
-        projectId: "rebmichel-11d46",
-        storageBucket: "rebmichel-11d46.appspot.com",
-        messagingSenderId: "244465725723",
-        appId: "1:244465725723:web:d5fe068cb9b87e358763be",
-        measurementId: "G-WJLYE5G1EX"
+    <div id="memoriesGrid" class="memories-grid">
+      <div class="loading show">
+        <div class="spinner"></div>
+        <p>Loading memories...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    /*************************************************************************
+     * CONFIG - Replace nothing here: using the values you provided earlier.
+     * Cloudinary values: CLOUDINARY_CLOUD_NAME & CLOUDINARY_UPLOAD_PRESET
+     *************************************************************************/
+    const firebaseConfig = {
+      apiKey: "AIzaSyAB_Blh5iEqmc-NfnnKCUF0ahJE8TBs7Vg",
+      authDomain: "rebmichel-11d46.firebaseapp.com",
+      projectId: "rebmichel-11d46",
+      storageBucket: "rebmichel-11d46.appspot.com",
+      messagingSenderId: "244465725723",
+      appId: "1:244465725723:web:d5fe068cb9b87e358763be",
+      measurementId: "G-WJLYE5G1EX"
     };
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+    // Cloudinary settings (from you)
+    const CLOUDINARY_CLOUD_NAME = 'deiauee2m';
+    const CLOUDINARY_UPLOAD_PRESET = 'rebmichel_unsigned'; // your preset name
 
-        // Language toggle
-        let currentLang = 'en';
-        const translations = {
-            en: {
-                mainTitle: "In Memory of Reb Michel Vishedsky",
-                subtitle: "Share your memories and moments",
-                shareTitle: "Share a Memory",
-                namePlaceholder: "Your Name",
-                emailPlaceholder: "Your Email (optional)",
-                memoryPlaceholder: "Share your memory or story...",
-                photoLabel: "Add Photo",
-                submitBtn: "Submit Memory",
-                filterTitle: "Filter Memories",
-                filterAll: "All",
-                filterText: "Stories",
-                uploadingText: "Submitting your memory...",
-                successMessage: "Thank you for sharing your memory! It will appear below.",
-                errorMessage: "Error submitting. Please try again.",
-                loadingText: "Loading memories...",
-                mediaNotice: "📷 Photo & video uploads coming soon! For now, please share your written memories below.",
-                noMemories: "No memories yet. Be the first to share!"
-            },
-            he: {
-                mainTitle: "לזכר הרב מיכל וישצקי",
-                subtitle: "שתפו את הזכרונות והרגעים שלכם",
-                shareTitle: "שתף זיכרון",
-                namePlaceholder: "השם שלך",
-                emailPlaceholder: "האימייל שלך (אופציונלי)",
-                memoryPlaceholder: "שתף את הזיכרון או הסיפור שלך...",
-                photoLabel: "הוסף תמונה",
-                submitBtn: "שלח זיכרון",
-                filterTitle: "סנן זכרונות",
-                filterAll: "הכל",
-                filterText: "סיפורים",
-                uploadingText: "שולח את הזיכרון שלך...",
-                successMessage: "תודה ששיתפת את הזיכרון שלך! הוא יופיע למטה.",
-                errorMessage: "שגיאה בשליחה. אנא נסה שוב.",
-                loadingText: "טוען זכרונות...",
-                mediaNotice: "📷 העלאת תמונות וסרטונים תהיה זמינה בקרוב! בינתיים, אנא שתפו את הזכרונות הכתובים שלכם.",
-                noMemories: "אין עדיין זכרונות. היו הראשונים לשתף!"
-            }
+    /*************************************************************************
+     * Initialization
+     *************************************************************************/
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // ensure client is anonymously authenticated (so Firestore rules requiring auth work)
+    async function ensureAuth() {
+      if (!auth.currentUser) {
+        try {
+          await auth.signInAnonymously();
+          console.log('Signed in anonymously');
+        } catch (err) {
+          console.warn('Anonymous sign-in failed:', err);
+        }
+      }
+    }
+
+    /*************************************************************************
+     * Language toggle translations (keeps your existing translations)
+     *************************************************************************/
+    let currentLang = 'en';
+    const translations = {
+      en: {
+        mainTitle: "In Memory of Reb Michel Vishedsky",
+        subtitle: "Share your memories and moments",
+        shareTitle: "Share a Memory",
+        namePlaceholder: "Your Name",
+        emailPlaceholder: "Your Email (optional)",
+        memoryPlaceholder: "Share your memory or story...",
+        photoLabel: "Add Photo",
+        submitBtn: "Submit Memory",
+        filterTitle: "Filter Memories",
+        filterAll: "All",
+        filterText: "Stories",
+        uploadingText: "Submitting your memory...",
+        successMessage: "Thank you for sharing your memory! It will appear below.",
+        errorMessage: "Error submitting. Please try again.",
+        loadingText: "Loading memories...",
+        mediaNotice: "📷 / 🎥 / 🎵 Upload photos, videos, or audio — or just share a written memory.",
+        noMemories: "No memories yet. Be the first to share!"
+      },
+      he: {
+        mainTitle: "לזכר הרב מיכל וישצקי",
+        subtitle: "שתפו את הזכרונות והרגעים שלכם",
+        shareTitle: "שתף זיכרון",
+        namePlaceholder: "השם שלך",
+        emailPlaceholder: "האימייל שלך (אופציונלי)",
+        memoryPlaceholder: "שתף את הזיכרון או הסיפור שלך...",
+        photoLabel: "הוסף תמונה",
+        submitBtn: "שלח זיכרון",
+        filterTitle: "סנן זכרונות",
+        filterAll: "הכל",
+        filterText: "סיפורים",
+        uploadingText: "שולח את הזיכרון שלך...",
+        successMessage: "תודה ששיתפת את הזיכרון שלך! הוא יופיע למטה.",
+        errorMessage: "שגיאה בשליחה. אנא נסה שוב.",
+        loadingText: "טוען זכרונות...",
+        mediaNotice: "📷 / 🎥 / 🎵 העלאת מדיה זמינה — אנא העלו קובץ קטן מהתקן.",
+        noMemories: "אין עדיין זכרונות. היו הראשונים לשתף!"
+      }
+    };
+
+    function toggleLanguage() {
+      currentLang = currentLang === 'en' ? 'he' : 'en';
+      document.body.classList.toggle('hebrew', currentLang === 'he');
+      document.querySelector('.lang-toggle').textContent = currentLang === 'en' ? 'עברית' : 'English';
+      updateLanguage();
+    }
+
+    function updateLanguage() {
+      const t = translations[currentLang];
+      document.getElementById('mainTitle').textContent = t.mainTitle;
+      document.getElementById('subtitle').textContent = t.subtitle;
+      document.getElementById('shareTitle').textContent = t.shareTitle;
+      document.getElementById('authorName').placeholder = t.namePlaceholder;
+      document.getElementById('authorEmail').placeholder = t.emailPlaceholder;
+      document.getElementById('memoryText').placeholder = t.memoryPlaceholder;
+      document.getElementById('submitBtn').textContent = t.submitBtn;
+      document.getElementById('loadingText').textContent = t.uploadingText;
+      document.getElementById('mediaNotice').textContent = t.mediaNotice;
+
+      // Update filters
+      document.getElementById('filterTitle').textContent = t.filterTitle;
+      document.getElementById('filterAll').textContent = t.filterAll;
+      document.getElementById('filterText').textContent = t.filterText;
+      document.getElementById('filterImage').textContent = 'Photos';
+      document.getElementById('filterVideo').textContent = 'Videos';
+      document.getElementById('filterAudio').textContent = 'Audio';
+    }
+
+    /*************************************************************************
+     * Cloudinary upload helper (unsigned preset)
+     *************************************************************************/
+    async function uploadToCloudinary(file) {
+      const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`;
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+      const resp = await fetch(url, { method: 'POST', body: fd });
+      if (!resp.ok) {
+        const txt = await resp.text();
+        throw new Error('Cloudinary upload failed: ' + resp.status + ' ' + txt);
+      }
+      return await resp.json(); // contains secure_url, resource_type, etc.
+    }
+
+    /*************************************************************************
+     * Submit handler: uploads media (if any) then writes Firestore doc
+     *************************************************************************/
+    document.getElementById('memoryForm').addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      await ensureAuth();
+
+      const loading = document.getElementById('loading');
+      const status = document.getElementById('uploadStatus');
+      const submitBtn = document.querySelector('button[type="submit"]');
+      loading.classList.add('show');
+      status.className = 'upload-status';
+      submitBtn.disabled = true;
+
+      try {
+        const author = document.getElementById('authorName').value.trim() || 'Anonymous';
+        const email = document.getElementById('authorEmail').value.trim() || '';
+        const text = document.getElementById('memoryText').value.trim() || '';
+        const fileInput = document.getElementById('mediaFile');
+        const youtubeUrl = document.getElementById('youtubeUrl') ? document.getElementById('youtubeUrl').value.trim() : '';
+        const pdfUrl = document.getElementById('pdfUrl') ? document.getElementById('pdfUrl').value.trim() : '';
+
+        let mediaURL = '';
+        let mediaType = 'text';
+
+        // If a file selected, upload to Cloudinary
+        if (fileInput && fileInput.files && fileInput.files[0]) {
+          const file = fileInput.files[0];
+          // limit size
+          const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
+          if (file.size > MAX_BYTES) throw new Error('File too large (max 10 MB)');
+
+          const result = await uploadToCloudinary(file);
+          mediaURL = result.secure_url || '';
+          // resource_type is often 'image' or 'video' or 'raw' (audio may be raw)
+          if (result.resource_type === 'image') mediaType = 'image';
+          else if (result.resource_type === 'video') mediaType = 'video';
+          else if (result.resource_type === 'raw' && file.type.startsWith('audio')) mediaType = 'audio';
+          else mediaType = 'file';
+        } else if (youtubeUrl) {
+          // Save as youtube type (admin may use)
+          mediaURL = youtubeUrl;
+          mediaType = 'youtube';
+        } else if (pdfUrl) {
+          mediaURL = pdfUrl;
+          mediaType = 'pdf';
+        }
+
+        // Build doc
+        const now = new Date();
+        const doc = {
+          type: mediaType,
+          author,
+          email,
+          text,
+          mediaURL,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          date: now.toISOString()
         };
 
-        function toggleLanguage() {
-            currentLang = currentLang === 'en' ? 'he' : 'en';
-            document.body.classList.toggle('hebrew', currentLang === 'he');
-            document.querySelector('.lang-toggle').textContent = currentLang === 'en' ? 'עברית' : 'English';
-            updateLanguage();
+        await db.collection('memories').add(doc);
+
+        // Success UI
+        loading.classList.remove('show');
+        status.className = 'upload-status success';
+        status.textContent = translations[currentLang].successMessage || 'Thank you — memory submitted!';
+        document.getElementById('memoryForm').reset();
+        // hide admin fields again
+        document.getElementById('adminFields').style.display = 'none';
+        document.getElementById('adminToggle').textContent = 'Enable';
+        loadMemories();
+
+      } catch (err) {
+        console.error('Submit error', err);
+        loading.classList.remove('show');
+        status.className = 'upload-status error';
+        status.textContent = (translations[currentLang].errorMessage || 'Error submitting. Please try again.') + ' ' + (err.message || '');
+      } finally {
+        submitBtn.disabled = false;
+        setTimeout(() => { document.getElementById('uploadStatus').className = 'upload-status'; }, 4000);
+      }
+    });
+
+    /*************************************************************************
+     * Render memories
+     *************************************************************************/
+    async function loadMemories(filter = 'all') {
+      const grid = document.getElementById('memoriesGrid');
+      grid.innerHTML = '<div class="loading show"><div class="spinner"></div><p>Loading memories...</p></div>';
+      await ensureAuth();
+
+      try {
+        let query = db.collection('memories').orderBy('timestamp', 'desc').limit(200);
+        if (filter !== 'all') query = db.collection('memories').where('type', '==', filter).orderBy('timestamp','desc').limit(200);
+
+        const snapshot = await query.get();
+        if (snapshot.empty) {
+          grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;background:white;border-radius:15px;">
+            <p style="color:#666;font-size:1.2em;">${translations[currentLang].noMemories}</p>
+          </div>`;
+          return;
         }
 
-        function updateLanguage() {
-            const t = translations[currentLang];
-            document.getElementById('mainTitle').textContent = t.mainTitle;
-            document.getElementById('subtitle').textContent = t.subtitle;
-            document.getElementById('shareTitle').textContent = t.shareTitle;
-            document.getElementById('authorName').placeholder = t.namePlaceholder;
-            document.getElementById('authorEmail').placeholder = t.emailPlaceholder;
-            document.getElementById('memoryText').placeholder = t.memoryPlaceholder;
-            document.getElementById('submitBtn').textContent = t.submitBtn;
-            document.getElementById('loadingText').textContent = t.uploadingText;
-            document.getElementById('mediaNotice').textContent = t.mediaNotice;
-            
-            // Update filter section if visible
-            const filterTitle = document.getElementById('filterTitle');
-            if (filterTitle) filterTitle.textContent = t.filterTitle;
-            const filterAll = document.getElementById('filterAll');
-            if (filterAll) filterAll.textContent = t.filterAll;
-            const filterText = document.getElementById('filterText');
-            if (filterText) filterText.textContent = t.filterText;
-        }
-
-        document.getElementById('memoryForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const loading = document.getElementById('loading');
-            const status = document.getElementById('uploadStatus');
-            const submitBtn = document.querySelector('button[type="submit"]');
-            
-            loading.classList.add('show');
-            status.className = 'upload-status';
-            submitBtn.disabled = true;
-            
-            try {
-                const now = new Date();
-                const memoryData = {
-                    type: 'text',
-                    author: document.getElementById('authorName').value.trim(),
-                    email: document.getElementById('authorEmail').value.trim(),
-                    text: document.getElementById('memoryText').value.trim(),
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                    date: now.toISOString()
-                };
-
-                // Save to Firestore
-                await db.collection('memories').add(memoryData);
-                
-                // Success
-                loading.classList.remove('show');
-                status.className = 'upload-status success';
-                status.textContent = translations[currentLang].successMessage;
-                
-                // Reset form
-                document.getElementById('memoryForm').reset();
-                
-                // Reload memories
-                loadMemories();
-                
-                setTimeout(() => {
-                    status.className = 'upload-status';
-                    submitBtn.disabled = false;
-                }, 3000);
-                
-            } catch (error) {
-                loading.classList.remove('show');
-                status.className = 'upload-status error';
-                status.textContent = translations[currentLang].errorMessage;
-                console.error('Error:', error);
-                submitBtn.disabled = false;
-            }
+        grid.innerHTML = '';
+        snapshot.forEach(doc => {
+          const m = doc.data();
+          grid.innerHTML += createMemoryCard(m);
         });
+      } catch (err) {
+        console.error('Load error', err);
+        grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:white;">
+          <p>Error loading memories. See console for details.</p>
+          <p style="font-size:0.9em;margin-top:10px;">${err.message || ''}</p>
+        </div>`;
+      }
+    }
 
-        async function loadMemories(filter = 'all') {
-            const grid = document.getElementById('memoriesGrid');
-            
-            try {
-                let query = db.collection('memories').orderBy('timestamp', 'desc').limit(100);
-                
-                if (filter !== 'all') {
-                    query = query.where('type', '==', filter);
-                }
-                
-                const snapshot = await query.get();
-                grid.innerHTML = '';
-                
-                if (snapshot.empty) {
-                    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; background: white; border-radius: 15px;">
-                        <p style="color: #666; font-size: 1.2em;">${translations[currentLang].noMemories}</p>
-                    </div>`;
-                    return;
-                }
-                
-                snapshot.forEach(doc => {
-                    const memory = doc.data();
-                    const card = createMemoryCard(memory);
-                    grid.innerHTML += card;
-                });
-                
-            } catch (error) {
-                console.error('Error loading memories:', error);
-                grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: white;">
-                    <p>Error loading memories. Please refresh the page.</p>
-                    <p style="font-size: 0.9em; margin-top: 10px;">Error: ${error.message}</p>
-                </div>`;
-            }
+    function createMemoryCard(m) {
+      // safe text encoding
+      const safe = (s) => { if (!s) return ''; const d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
+      let date = 'Recent';
+      if (m.timestamp) {
+        try { date = m.timestamp.toDate ? m.timestamp.toDate().toLocaleDateString() : new Date(m.date).toLocaleDateString(); }
+        catch (e) { date = m.date ? new Date(m.date).toLocaleDateString() : 'Recent'; }
+      }
+
+      // Media rendering
+      let mediaHtml = '';
+      if (m.mediaURL) {
+        if (m.type === 'image') {
+          mediaHtml = `<img class="memory-media" src="${m.mediaURL}" alt="photo">`;
+        } else if (m.type === 'video') {
+          // use video tag (Cloudinary delivered mp4 should play)
+          mediaHtml = `<video class="memory-media" controls playsinline src="${m.mediaURL}"></video>`;
+        } else if (m.type === 'audio') {
+          mediaHtml = `<audio controls style="width:100%"><source src="${m.mediaURL}"></audio>`;
+        } else if (m.type === 'youtube') {
+          // convert watch?v= to embed
+          const vid = extractYouTubeID(m.mediaURL);
+          if (vid) {
+            mediaHtml = `<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:10px;"><iframe src="https://www.youtube.com/embed/${vid}" frameborder="0" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe></div>`;
+          } else {
+            mediaHtml = `<a href="${m.mediaURL}" target="_blank">${m.mediaURL}</a>`;
+          }
+        } else if (m.type === 'pdf') {
+          // embed pdf using object tag (public pdf)
+          mediaHtml = `<div style="border-radius:10px;overflow:hidden;"><object data="${m.mediaURL}" type="application/pdf" width="100%" height="400px">PDF cannot be displayed — <a href="${m.mediaURL}" target="_blank">download</a></object></div>`;
+        } else {
+          mediaHtml = `<a href="${m.mediaURL}" target="_blank">Download file</a>`;
         }
+      }
 
-        function createMemoryCard(memory) {
-            let date = 'Recent';
-            if (memory.timestamp) {
-                try {
-                    date = new Date(memory.timestamp.toDate()).toLocaleDateString();
-                } catch (e) {
-                    if (memory.date) {
-                        date = new Date(memory.date).toLocaleDateString();
-                    }
-                }
-            }
-            
-            // Escape HTML to prevent XSS
-            const escapeHtml = (text) => {
-                const div = document.createElement('div');
-                div.textContent = text;
-                return div.innerHTML;
-            };
-            
-            return `
-                <div class="memory-card">
-                    <div class="memory-header">
-                        <span class="memory-author">${escapeHtml(memory.author)}</span>
-                        <span class="memory-date">${date}</span>
-                    </div>
-                    <div class="memory-content">${escapeHtml(memory.text)}</div>
-                </div>
-            `;
-        }
+      return `
+        <div class="memory-card">
+          <div class="memory-header">
+            <span class="memory-author">${safe(m.author)}</span>
+            <span class="memory-date">${date}</span>
+          </div>
+          <div class="memory-content">${safe(m.text)}</div>
+          ${mediaHtml}
+        </div>
+      `;
+    }
 
-        function filterMemories(type) {
-            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            loadMemories(type);
-        }
+    // helper to pull youtube ID from common URL patterns
+    function extractYouTubeID(url) {
+      if (!url) return null;
+      const patterns = [
+        /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([^&\s]+)/,
+        /(?:https?:\/\/)?(?:www\.)?youtu\.be\/([^&\s]+)/,
+        /(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([^&\s]+)/
+      ];
+      for (const p of patterns) {
+        const m = url.match(p);
+        if (m && m[1]) return m[1];
+      }
+      return null;
+    }
 
-        // Load memories on page load
-        window.addEventListener('DOMContentLoaded', () => {
-            loadMemories();
-        });
-    </script>
+    /*************************************************************************
+     * Filters (fixed to accept event)
+     *************************************************************************/
+    function filterMemories(type, e) {
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      if (e && e.currentTarget) e.currentTarget.classList.add('active');
+      loadMemories(type);
+    }
+
+    /*************************************************************************
+     * Admin toggle (client-side only for now)
+     *************************************************************************/
+    document.getElementById('adminToggle').addEventListener('click', () => {
+      const adminFields = document.getElementById('adminFields');
+      const btn = document.getElementById('adminToggle');
+      if (adminFields.style.display === 'none' || adminFields.style.display === '') {
+        adminFields.style.display = 'block';
+        btn.textContent = 'Disable';
+      } else {
+        adminFields.style.display = 'none';
+        btn.textContent = 'Enable';
+      }
+    });
+
+    /*************************************************************************
+     * Init on load
+     *************************************************************************/
+    window.addEventListener('DOMContentLoaded', async () => {
+      updateLanguage();
+      await ensureAuth();
+      loadMemories();
+    });
+  </script>
 </body>
 </html>
